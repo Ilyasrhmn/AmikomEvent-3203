@@ -49,6 +49,12 @@
                 <i class="fa-solid fa-chart-simple w-5 h-5 text-center"></i>
                 Laporan Transaksi
             </a>
+            <!-- Partner -->
+            <a href="{{ route('admin.partners.index') }}" 
+                class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.partners.*') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800' }} rounded-xl font-bold transition">
+                <i class="fa-solid fa-handshake w-5 h-5 text-center"></i>
+                Kelola Partner
+            </a>
         </nav>
 
         <div class="pt-6 border-t border-indigo-800">
