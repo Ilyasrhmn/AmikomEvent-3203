@@ -8,10 +8,17 @@ use Illuminate\Http\Request;
 
 class PartnerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $partners = Partner::latest()->get();
-        return view('admin.partners.index', compact('partners'));
+        $search = $request->input('search');
+        $query = Partner::query();
+
+        if ($search) {
+            $query->where('name', 'LIKE', '%' . $search . '%');
+        }
+
+        $partners = $query->latest()->paginate(10);
+        return view('admin.partners.index', compact('partners', 'search'));
     }
 
     public function create()
@@ -22,7 +29,7 @@ class PartnerController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'logo_url' => 'required|string|max:500',
         ]);
 
@@ -40,7 +47,7 @@ class PartnerController extends Controller
     public function update(Request $request, Partner $partner)
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'logo_url' => 'required|string|max:500',
         ]);
 

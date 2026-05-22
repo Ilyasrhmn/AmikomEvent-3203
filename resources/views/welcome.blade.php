@@ -63,7 +63,7 @@
             <!-- Rujukan awal navigasi bebas bawaan -->
             <a href="/"
                 class="px-6 py-2.5 rounded-full font-semibold text-sm hover:scale-105 transition-all duration-200
-                    {{ !request('category') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700' : 'bg-white border-2 border-indigo-200 text-indigo-600 shadow-sm hover:bg-indigo-600 hover:text-white hover:border-indigo-600' }}">
+                            {{ !request('category') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700' : 'bg-white border-2 border-indigo-200 text-indigo-600 shadow-sm hover:bg-indigo-600 hover:text-white hover:border-indigo-600' }}">
                 Semua Kategori
             </a>
 
@@ -71,7 +71,7 @@
             @foreach($categories as $cat)
                 <a href="/?category={{ $cat->slug }}"
                     class="px-6 py-2.5 rounded-full font-semibold text-sm hover:scale-105 transition-all duration-200
-                        {{ request('category') === $cat->slug ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700' : 'bg-white border-2 border-indigo-200 text-indigo-600 shadow-sm hover:bg-indigo-600 hover:text-white hover:border-indigo-600' }}">
+                                        {{ request('category') === $cat->slug ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700' : 'bg-white border-2 border-indigo-200 text-indigo-600 shadow-sm hover:bg-indigo-600 hover:text-white hover:border-indigo-600' }}">
                     {{ $cat->name }}
                 </a>
             @endforeach
@@ -87,7 +87,8 @@
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                         <div
                             class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
-                            {{ $event->category->name }}</div>
+                            {{ $event->category->name }}
+                        </div>
                     </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition">{{ $event->title }}</h3>
@@ -99,7 +100,8 @@
                             <span>{{ \Carbon\Carbon::parse($event->date)->format('d-m-Y H:i') }}</span>
                         </div>
                         <div class="flex justify-between items-center pt-4 border-t">
-                            <span class="text-2xl font-black text-indigo-600">Rp {{ number_format($event->price, 0, ',', '.') }}</span>
+                            <span class="text-2xl font-black text-indigo-600">Rp
+                                {{ number_format($event->price, 0, ',', '.') }}</span>
                             <a href="{{ url('event/1') }}"
                                 class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">Lihat
                                 Detail</a>
@@ -108,5 +110,31 @@
                 </div>
             @endforeach
         </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="max-w-7xl mx-auto px-6 py-20 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-3xl">
+        <div class="mb-12">
+            <h2 class="text-3xl font-extrabold mb-2">Partner Kami</h2>
+            <p class="text-slate-500 font-medium">Platform ini didukung oleh mitra-mitra terpercaya</p>
+        </div>
+
+        @if($partners->count() > 0)
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                @foreach($partners as $partner)
+                    <div>
+                        <div class="text-center">
+                            <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}"
+                                class="w-full h-20 object-contain mb-3 hover:scale-110 transition-transform">
+                            <p class="text-sm font-semibold text-gray-700">{{ $partner->name }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-12">
+                <p class="text-gray-400">Belum ada partner yang ditampilkan</p>
+            </div>
+        @endif
     </section>
 @endsection
