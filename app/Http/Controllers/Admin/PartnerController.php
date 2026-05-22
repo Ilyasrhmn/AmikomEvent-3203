@@ -17,7 +17,7 @@ class PartnerController extends Controller
             $query->where('name', 'LIKE', '%' . $search . '%');
         }
 
-        $partners = $query->latest()->paginate(10);
+        $partners = $query->latest()->get();
         return view('admin.partners.index', compact('partners', 'search'));
     }
 

@@ -104,16 +104,6 @@
                     @endforelse
                 </tbody>
             </table>
-            @if($events->hasPages())
-                <div
-                    class="px-6 py-4 bg-slate-50/50 border-t flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <p class="text-sm text-slate-500 font-medium">
-                        Menampilkan {{ $events->firstItem() ?? 0 }}-{{ $events->lastItem() ?? 0 }} dari {{ $events->total() }}
-                        data
-                    </p>
-                    {{ $events->appends(['search' => $search])->links('pagination.admin') }}
-                </div>
-            @endif
         </div>
     </div>
 

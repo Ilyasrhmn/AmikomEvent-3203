@@ -21,8 +21,8 @@ class EventController extends Controller
             $query->where('title', 'LIKE', '%' . $search . '%');
         }
 
-        // Memakai relasi dan pengaturan limit paginasi (10 entri per halaman)
-        $events = $query->latest()->paginate(10);
+        // Memakai relasi untuk mengambil semua data event
+        $events = $query->latest()->get();
         return view('admin.events.index', compact('events', 'search'));
     }
 

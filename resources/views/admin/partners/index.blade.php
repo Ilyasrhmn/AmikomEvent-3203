@@ -90,16 +90,6 @@
                     @endforelse
                 </tbody>
             </table>
-            @if($partners->hasPages())
-                <div
-                    class="px-6 py-4 bg-slate-50/50 border-t flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <p class="text-sm text-slate-500 font-medium">
-                        Menampilkan {{ $partners->firstItem() ?? 0 }}-{{ $partners->lastItem() ?? 0 }} dari
-                        {{ $partners->total() }} data
-                    </p>
-                    {{ $partners->appends(['search' => $search])->links('pagination.admin') }}
-                </div>
-            @endif
         </div>
     </div>
 @endsection
