@@ -21,7 +21,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.events.store') }}" method="POST"
+        <form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data"
             class="bg-white rounded-2xl border border-slate-200 shadow-sm">
             @csrf
 
@@ -90,6 +90,12 @@
                     <input type="text" name="location" value="{{ old('location') }}"
                         class="w-full border border-slate-200 px-4 py-2.5 rounded-lg focus:ring focus:ring-indigo-100 focus:border-indigo-400 outline-none"
                         placeholder="Contoh: Gedung Serbaguna Lt.2, Amikom..." required>
+                </div>
+
+                {{-- Poster Event --}}
+                <div class="mb-6">
+                    <label class="block mb-2 font-medium text-gray-700">Poster Event (Opsional)</label>
+                    <input type="file" name="poster" accept="image/*" class="w-full border border-gray-300 p-2.5 rounded">
                 </div>
             </div>
 
