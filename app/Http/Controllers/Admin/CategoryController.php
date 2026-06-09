@@ -9,10 +9,17 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::withCount('events')->latest()->get();
-        return view('admin.categories.index', compact('categories'));
+        $search = $request->input('search');
+        $query = Category::withCount('events');
+
+        if ($search) {
+            $query->where('name', 'LIKE', '%' . $search . '%');
+        }
+
+        $categories = $query->latest()->get();
+        return view('admin.categories.index', compact('categories', 'search'));
     }
 
     public function create()
@@ -23,7 +30,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
@@ -43,7 +50,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 

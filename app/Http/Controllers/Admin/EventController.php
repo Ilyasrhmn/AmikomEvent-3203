@@ -11,11 +11,19 @@ class EventController extends Controller
     /**
      * 5.4.4 – Read: Menampilkan daftar event dengan paginasi
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Memakai relasi dan pengaturan limit paginasi (10 entri per halaman)
-        $events = \App\Models\Event::with('category')->latest()->paginate(10);
-        return view('admin.events.index', compact('events'));
+        $search = $request->input('search');
+
+        $query = \App\Models\Event::with('category');
+
+        if ($search) {
+            $query->where('title', 'LIKE', '%' . $search . '%');
+        }
+
+        // Memakai relasi untuk mengambil semua data event
+        $events = $query->latest()->get();
+        return view('admin.events.index', compact('events', 'search'));
     }
 
     /**
@@ -35,12 +43,12 @@ class EventController extends Controller
         // Menerapkan validasi data request dari pengguna
         $data = $request->validate([
             'category_id' => 'required',
-            'title'       => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'date'        => 'required|date',
-            'location'    => 'required|string|max:255',
-            'price'       => 'required|numeric',
-            'stock'       => 'required|numeric',
+            'date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric',
         ]);
 
         // Menyimpan data yang telah divalidasi ke dalam tabel menggunakan Model
@@ -74,12 +82,12 @@ class EventController extends Controller
     {
         $data = $request->validate([
             'category_id' => 'required',
-            'title'       => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'date'        => 'required|date',
-            'location'    => 'required|string|max:255',
-            'price'       => 'required|numeric',
-            'stock'       => 'required|numeric',
+            'date' => 'required|date',
+            'location' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric',
         ]);
 
         $event->update($data);

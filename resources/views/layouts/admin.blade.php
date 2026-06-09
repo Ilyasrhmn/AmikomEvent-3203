@@ -60,8 +60,8 @@
         <div class="pt-6 border-t border-indigo-800">
             <a href="{{ route('home') }}"
                 class="flex items-center gap-3 px-4 py-3 text-indigo-300 hover:text-white transition font-medium">
-                <i class="fa-solid fa-arrow-right-from-bracket w-5 h-5 text-center"></i>
-                Kembali ke Beranda
+                <i class="fa-solid fa-arrow-right-from-bracket text-center"></i>
+                Logout
             </a>
         </div>
     </aside>
