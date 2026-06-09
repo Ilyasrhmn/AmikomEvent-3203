@@ -21,7 +21,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.events.update', $event->id) }}" method="POST"
+        <form action="{{ route('admin.events.update', $event->id) }}" method="POST" enctype="multipart/form-data"
             class="bg-white rounded-2xl border border-slate-200 shadow-sm">
             @csrf
             @method('PUT')
@@ -93,6 +93,18 @@
                     <input type="text" name="location" value="{{ old('location', $event->location) }}"
                         class="w-full border border-slate-200 px-4 py-2.5 rounded-lg focus:ring focus:ring-indigo-100 focus:border-indigo-400 outline-none"
                         required>
+                </div>
+
+                {{-- Poster Event --}}
+                <div class="mb-6">
+                    <label class="block mb-2 font-medium text-gray-700">Poster Event (Opsional)</label>
+                    @if($event->poster_path)
+                        <div class="mb-2">
+                            <img src="{{ asset('storage/' . $event->poster_path) }}" alt="Poster saat ini" class="w-32 h-40 object-cover rounded-lg shadow-sm">
+                            <p class="text-xs text-slate-500 mt-1">Poster saat ini</p>
+                        </div>
+                    @endif
+                    <input type="file" name="poster" accept="image/*" class="w-full border border-gray-300 p-2.5 rounded">
                 </div>
             </div>
 

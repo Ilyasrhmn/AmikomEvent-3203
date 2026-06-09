@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - AmikomEventHub</title>
+    <title>AmikomEventHub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
@@ -58,11 +58,18 @@
         </nav>
 
         <div class="pt-6 border-t border-indigo-800">
-            <a href="{{ route('home') }}"
-                class="flex items-center gap-3 px-4 py-3 text-indigo-300 hover:text-white transition font-medium">
-                <i class="fa-solid fa-arrow-right-from-bracket text-center"></i>
-                Logout
-            </a>
+            <div class="px-4 py-2 mb-2">
+                <p class="text-xs text-indigo-400 font-medium">Login sebagai:</p>
+                <p class="text-sm font-bold text-white truncate">{{ Auth::user()->name }}</p>
+            </div>
+            <form method="POST" action="{{ route('admin.logout') }}">
+                @csrf
+                <button type="submit"
+                    class="flex items-center gap-3 px-4 py-3 text-indigo-300 hover:text-white transition font-medium w-full text-left">
+                    <i class="fa-solid fa-arrow-right-from-bracket text-center"></i>
+                    Logout
+                </button>
+            </form>
         </div>
     </aside>
 

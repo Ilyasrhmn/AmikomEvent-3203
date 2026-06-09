@@ -1,3 +1,4 @@
+@use('Illuminate\Support\Facades\Storage')
 @extends('layouts.admin')
 
 @section('content')
@@ -42,6 +43,7 @@
             <table class="min-w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wide">
                     <tr>
+                        <th class="px-6 py-3 font-semibold">Poster</th>
                         <th class="px-6 py-3 font-semibold">Judul Event</th>
                         <th class="px-6 py-3 font-semibold">Kategori</th>
                         <th class="px-6 py-3 font-semibold">Tanggal</th>
@@ -53,6 +55,11 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($events as $event)
                         <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4">
+                                <img src="{{ ($event->poster_path && Storage::disk('public')->exists($event->poster_path))
+                                    ? asset('storage/' . $event->poster_path)
+                                    : 'https://placehold.co/16x20' }}" class="w-16 h-20 rounded-xl object-cover shadow-sm">
+                            </td>
                             <td class="px-6 py-4 text-slate-900 font-medium">
                                 <p class="max-w-sm truncate">{{ $event->title }}</p>
                             </td>
@@ -92,7 +99,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-10 text-center text-slate-400">
+                            <td colspan="7" class="px-6 py-10 text-center text-slate-400">
                                 <i class="fa-solid fa-calendar-xmark text-3xl mb-2 block"></i>
                                 @if($search)
                                     Tidak ada event yang sesuai dengan pencarian "{{ $search }}"

@@ -42,14 +42,20 @@ class EventController extends Controller
     {
         // Menerapkan validasi data request dari pengguna
         $data = $request->validate([
-            'category_id' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'date' => 'required|date',
             'location' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|numeric|min:1',
+            'poster' => 'nullable|image|max:2048' // Maksimal 2MB
         ]);
+
+        if ($request->hasFile('poster')) {
+            // Simpan ke direktori storage/app/public/posters
+            $data['poster_path'] = $request->file('poster')->store('posters', 'public');
+        }
 
         // Menyimpan data yang telah divalidasi ke dalam tabel menggunakan Model
         \App\Models\Event::create($data);
@@ -66,39 +72,40 @@ class EventController extends Controller
         //
     }
 
-    /**
-     * 5.4.7 – Edit: Menampilkan form edit event
-     */
     public function edit(Event $event)
     {
         $categories = \App\Models\Category::all();
         return view('admin.events.edit', compact('event', 'categories'));
     }
 
-    /**
-     * 5.4.7 – Update: Menyimpan perubahan data event
-     */
     public function update(Request $request, Event $event)
     {
         $data = $request->validate([
-            'category_id' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'date' => 'required|date',
             'location' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|numeric|min:1',
+            'poster' => 'nullable|image|max:2048'
         ]);
+
+        if ($request->hasFile('poster')) {
+            // Hapus gambar lama jika sebelumnya sudah memiliki poster
+            if ($event->poster_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($event->poster_path);
+            }
+            // Upload gambar baru
+            $data['poster_path'] = $request->file('poster')->store('posters', 'public');
+        }
 
         $event->update($data);
 
         return redirect()->route('admin.events.index')
-            ->with('success', 'Rincian data event berhasil diperbarui.');
+            ->with('success', 'Event berhasil diperbarui.');
     }
 
-    /**
-     * 5.4.6 – Destroy: Menghapus data event secara permanen
-     */
     public function destroy(Event $event)
     {
         $event->delete();
