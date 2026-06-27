@@ -11,7 +11,10 @@ class Event extends Model
         'location', 'price', 'stock', 'poster_path'
     ];
 
-    // Menandakan atribut: 1 Event harus terpaut pada satu wujud Kategori
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class);
