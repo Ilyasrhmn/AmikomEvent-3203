@@ -62,7 +62,7 @@
         <!-- Blok Navigasi Filter Kategori -->
         <div class="mb-10 flex flex-wrap gap-3 justify-center">
             <!-- Rujukan awal navigasi bebas bawaan -->
-            <a href="/"
+            <a href="/#events"
                 class="px-6 py-2.5 rounded-full font-semibold text-sm hover:scale-105 transition-all duration-200
                             {{ !request('category') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700' : 'bg-white border-2 border-indigo-200 text-indigo-600 shadow-sm hover:bg-indigo-600 hover:text-white hover:border-indigo-600' }}">
                 Semua Kategori
@@ -70,7 +70,7 @@
 
             <!-- Melakukan iterasi nama Tab Kategori dinamis saat jumlah data bertambah -->
             @foreach($categories as $cat)
-                <a href="/?category={{ $cat->slug }}"
+                <a href="/?category={{ $cat->slug }}#events"
                     class="px-6 py-2.5 rounded-full font-semibold text-sm hover:scale-105 transition-all duration-200
                                         {{ request('category') === $cat->slug ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700' : 'bg-white border-2 border-indigo-200 text-indigo-600 shadow-sm hover:bg-indigo-600 hover:text-white hover:border-indigo-600' }}">
                     {{ $cat->name }}

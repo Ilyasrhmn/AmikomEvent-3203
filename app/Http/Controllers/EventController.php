@@ -16,11 +16,6 @@ class EventController extends Controller
         return view('event-detail', compact('categories', 'event'));
     }
 
-    public function checkout()
-    {
-        return view('checkout');
-    }
-
     public function ticket()
     {
         return view('ticket');

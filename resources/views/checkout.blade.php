@@ -3,7 +3,7 @@
 @section('content')
     <main class="max-w-3xl mx-auto px-6 py-20">
         <div class="mb-12">
-            <a href="{{ route('events.show') }}" class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
+            <a href="{{ route('events.show', $event->id) }}" class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
                 <i class="fa-solid fa-chevron-left w-4 h-4"></i>
                 Kembali ke Event
             </a>
@@ -11,22 +11,30 @@
             <p class="text-slate-500 mt-2">Lengkapi data Anda untuk mendapatkan tiket.</p>
         </div>
 
+        @if ($errors->any() || session('error'))
+            <div class="mb-8 p-4 bg-red-50 text-red-600 rounded-2xl font-medium">
+                {{ $errors->first() ?: session('error') }}
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 gap-8">
             {{-- Summary Card --}}
             <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
                 <h3 class="text-xl font-bold mb-6 border-b pb-4">Pesanan Anda</h3>
                 <div class="flex gap-6 items-start">
-                    <img src="{{ asset('assets/concert.png') }}" alt="Event" class="w-24 h-24 rounded-2xl object-cover">
+                    <img src="{{ ($event->poster_path && Storage::disk('public')->exists($event->poster_path))
+                        ? asset('storage/' . $event->poster_path)
+                        : 'https://placehold.co/200x600' }}" alt="{{ $event->title }}" class="w-24 h-24 rounded-2xl object-cover">
                     <div>
-                        <h4 class="font-extrabold text-lg">Jazz Night 2024: A Celebration</h4>
-                        <p class="text-slate-500">16 Nov 2024 • The Blue Note Lounge</p>
-                        <p class="text-indigo-600 font-bold mt-2">1 x Rp 150.000</p>
+                        <h4 class="font-extrabold text-lg">{{ $event->title }}</h4>
+                        <p class="text-slate-500">{{ $event->date }} • {{ $event->location }}</p>
+                        <p class="text-indigo-600 font-bold mt-2">1 x Rp {{ number_format($event->price, 0, ',', '.') }}</p>
                     </div>
                 </div>
                 <div class="mt-8 pt-6 border-t space-y-3">
                     <div class="flex justify-between text-slate-500">
                         <span>Harga Tiket</span>
-                        <span>Rp 150.000</span>
+                        <span>Rp {{ number_format($event->price, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between text-slate-500">
                         <span>Biaya Layanan</span>
@@ -34,7 +42,7 @@
                     </div>
                     <div class="flex justify-between text-2xl font-black mt-4 pt-4 border-t">
                         <span>Total Bayar</span>
-                        <span class="text-indigo-600">Rp 155.000</span>
+                        <span class="text-indigo-600">Rp {{ number_format($event->price + 5000, 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
@@ -43,11 +51,12 @@
             <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
                 <h3 class="text-xl font-bold mb-6 italic text-indigo-600 underline underline-offset-8"><i class="fa-solid fa-box"></i> Data Pemesan
                     (Tanpa Login)</h3>
-                <form class="space-y-6">
+                <form method="POST" action="{{ route('checkout.store', $event->id) }}" class="space-y-6">
+                    @csrf
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nama
                             Lengkap</label>
-                        <input type="text" placeholder="Masukkan nama sesuai identitas"
+                        <input type="text" name="customer_name" value="{{ old('customer_name') }}" placeholder="Masukkan nama sesuai identitas"
                             class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
                             required>
                     </div>
@@ -55,7 +64,7 @@
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Email
                                 Aktif</label>
-                            <input type="email" placeholder="contoh@gmail.com"
+                            <input type="email" name="customer_email" value="{{ old('customer_email') }}" placeholder="contoh@gmail.com"
                                 class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
                                 required>
                             <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">*E-Ticket
@@ -64,13 +73,13 @@
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">No.
                                 WhatsApp</label>
-                            <input type="tel" placeholder="08xxxxxxx"
+                            <input type="tel" name="customer_phone" value="{{ old('customer_phone') }}" placeholder="08xxxxxxx"
                                 class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
                                 required>
                         </div>
                     </div>
 
-                    <button type="button" onclick="showMidtrans()"
+                    <button type="submit"
                         class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all">
                         Bayar Sekarang
                     </button>
@@ -80,67 +89,4 @@
             </div>
         </div>
     </main>
-
-    {{-- Overlay Midtrans Simulation --}}
-    <div id="midtrans-overlay"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] overflow-hidden shadow-2xl">
-            <div class="bg-slate-50 p-6 flex justify-between items-center border-b">
-                <span class="font-black text-slate-800 tracking-tight"><i class="fa-solid fa-lock"></i> Midtrans Payment</span>
-                <button onclick="hideMidtrans()" class="p-2 hover:bg-slate-200 rounded-full">
-                    <i class="fa-solid fa-xmark w-5 h-5"></i>
-                </button>
-            </div>
-            <div class="p-8 text-center">
-                <p class="text-slate-500 font-medium">Total Tagihan</p>
-                <h2 class="text-3xl font-black text-indigo-700 my-2">Rp 155.000</h2>
-                <p class="text-xs text-slate-400">Order ID #TRX-99210</p>
-
-                <div class="mt-8 space-y-4">
-                    <button onclick="window.location.href='{{ route('ticket') }}'"
-                        class="w-full py-4 border-2 border-indigo-100 rounded-2xl flex justify-between items-center px-6 hover:border-indigo-600 transition group">
-                        <span class="font-bold group-hover:text-indigo-600">GoPay / QRIS</span>
-                        <span class="text-indigo-400">→</span>
-                    </button>
-                    <button
-                        class="w-full py-4 border-2 border-indigo-100 rounded-2xl flex justify-between items-center px-6 opacity-50 cursor-not-allowed">
-                        <span class="font-bold">Virtual Account (BNI, BRI)</span>
-                        <span class="text-indigo-400">→</span>
-                    </button>
-                    <button
-                        class="w-full py-4 border-2 border-indigo-100 rounded-2xl flex justify-between items-center px-6 opacity-50 cursor-not-allowed">
-                        <span class="font-bold">Kartu Debit/Kredit</span>
-                        <span class="text-indigo-400">→</span>
-                    </button>
-                </div>
-
-                <div class="mt-12 flex items-center justify-center gap-2 text-xs text-slate-400 font-bold uppercase tracking-widest">
-                    <i class="fa-solid fa-lock w-4 h-4"></i>
-                    Secure Checkout by Midtrans
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function showMidtrans() {
-            const overlay = document.getElementById('midtrans-overlay');
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-        }
-        function hideMidtrans() {
-            const overlay = document.getElementById('midtrans-overlay');
-            overlay.classList.add('hidden');
-            overlay.classList.remove('flex');
-        }
-    </script>
-
-    <style>
-        @keyframes bounce-in {
-            0% { transform: scale(0.9); opacity: 0; }
-            70% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); }
-        }
-        .animate-bounce-in { animation: bounce-in 0.4s ease-out forwards; }
-    </style>
 @endsection
