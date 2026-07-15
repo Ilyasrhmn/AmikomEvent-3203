@@ -57,8 +57,8 @@
                     @forelse ($transactions as $trx)
                         @php
                             $statusStyle = match (strtolower($trx->status)) {
-                                'success' => 'bg-green-100 text-green-700 ring-green-200',
-                                'expired' => 'bg-rose-100 text-rose-700 ring-rose-200',
+                                'success', 'settlement' => 'bg-green-100 text-green-700 ring-green-200',
+                                'expired', 'failed', 'cancel' => 'bg-rose-100 text-rose-700 ring-rose-200',
                                 default => 'bg-orange-100 text-orange-700 ring-orange-200',
                             };
                         @endphp

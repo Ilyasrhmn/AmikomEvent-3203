@@ -34,6 +34,7 @@ class CheckoutController extends Controller
             'customer_email' => $request->customer_email,
             'customer_phone' => $request->customer_phone,
             'total_price' => $totalPrice,
+            'status' => 'pending',
         ]);
 
         // --- INTEGRASI SNAP MIDTRANS ---
