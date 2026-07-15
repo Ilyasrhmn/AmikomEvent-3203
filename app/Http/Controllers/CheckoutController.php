@@ -76,17 +76,39 @@ class CheckoutController extends Controller
     public function success($order_id)
     {
         $categories = Category::all();
-        $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
+        $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
 
-        // Validasi status pembayaran asli dari Midtrans (mencegah manipulasi URL)
+        // Konfigurasi Midtrans untuk mengecek status transaksi langsung ke API
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
 
         try {
-            $midtransStatus = \Midtrans\Transaction::status($order_id);
+            // Mengecek status pesanan secara mandiri (Bypass), untuk berjaga-jaga jika Webhook belum sempat masuk
+            $status = \Midtrans\Transaction::status($order_id);
 
-            if (in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
-                $transaction->update(['status' => 'success']);
+            if ($status) {
+                $trx_status = is_array($status) ? ($status['transaction_status'] ?? '') : ($status->transaction_status ?? '');
+
+                if (in_array($trx_status, ['settlement', 'capture'])) {
+                    // Hanya lakukan update jika status di database lokal masih 'pending' (indikasi Webhook tidak masuk)
+                    if (strtolower($transaction->status) === 'pending') {
+                        $transaction->update(['status' => 'success']);
+
+                        if ($transaction->event && $transaction->event->stock > 0) {
+                            $transaction->event->stock = $transaction->event->stock - 1;
+                            $transaction->event->save();
+
+                            try {
+                                \Illuminate\Support\Facades\Mail::to($transaction->customer_email)
+                                    ->send(new \App\Mail\EventTicketMail($transaction));
+                            } catch (\Exception $e) {
+                                \Log::error('Gagal mengirim email E-Ticket secara manual (Bypass): ' . $e->getMessage());
+                            }
+                        }
+                    }
+                }
             }
         } catch (\Exception $e) {
             return redirect()->route('home')->with('error', 'Transaksi tidak ditemukan atau gagal diproses oleh sistem pembayaran.');
